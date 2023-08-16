@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=euc-kr" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+	
 <c:choose>
 	<c:when test="${ !empty menu && menu.equals('manage') }">
 		<c:set var="title" value="상품 관리"/>
@@ -16,6 +16,9 @@
 	<title>${ title }</title>
 
 	<link rel="stylesheet" href="/css/admin.css" type="text/css">
+	
+	<script type="text/javascript" src="../javascript/calendar.js">
+	</script>
 
 	<script type="text/javascript">
 	
