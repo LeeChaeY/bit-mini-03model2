@@ -19,6 +19,9 @@ public class ListProductAction extends Action {
 		
 		int currentPage=1;
 		String menu = null;
+		String beginPrice = null;
+		String endPrice = null;
+		String orderCondition = null;
 		
 		if(request.getParameter("currentPage") != null)
 			currentPage=Integer.parseInt(request.getParameter("currentPage"));
@@ -30,6 +33,15 @@ public class ListProductAction extends Action {
 			search.setSearchCondition(request.getParameter("searchCondition"));
 		if (request.getParameter("searchKeyword") != null)
 			search.setSearchKeyword(request.getParameter("searchKeyword"));
+		if(request.getParameter("beginPrice") != null && request.getParameter("endPrice") != null) {
+			beginPrice = request.getParameter("beginPrice");
+			request.setAttribute("beginPrice", request.getParameter("beginPrice"));
+			endPrice = request.getParameter("endPrice");
+			request.setAttribute("endPrice", endPrice);
+			search.setSearchKeyword(beginPrice+","+endPrice);
+		}
+		if(request.getParameter("orderCondition") != null)
+			search.setOrderCondition(request.getParameter("orderCondition"));
 		
 		int pageSize = Integer.parseInt( getServletContext().getInitParameter("pageSize"));
 		int pageUnit  =  Integer.parseInt(getServletContext().getInitParameter("pageUnit"));

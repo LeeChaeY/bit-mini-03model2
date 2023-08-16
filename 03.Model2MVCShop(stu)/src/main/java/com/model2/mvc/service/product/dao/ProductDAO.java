@@ -87,14 +87,21 @@ public class ProductDAO {
 
 		if (search.getSearchCondition() != null &&  !search.getSearchKeyword().equals("") ) {
 			if (search.getSearchCondition().equals("0")) {
-				sql += " WHERE P.prod_no = " + search.getSearchKeyword();
-			} else if (search.getSearchCondition().equals("1")) {
 				sql += " WHERE LOWER(prod_name) LIKE '%" + search.getSearchKeyword().toLowerCase() + "%'";
-			} else if (search.getSearchCondition().equals("2")) {
-				sql += " WHERE price = " + search.getSearchKeyword();
+			} else if (search.getSearchCondition().equals("1")) {
+				sql += " WHERE price BETWEEN " + search.getSearchKeyword().split(",")[0]
+						+ " AND " + search.getSearchKeyword().split(",")[1];
 			}
 		}
-		sql += " order by P.prod_no";
+		if (search.getOrderCondition() != null) {
+			if ( search.getOrderCondition().equals("1")) {
+				sql += " order by P.price";
+			} else if ( search.getOrderCondition().equals("2")) {
+				sql += " order by P.price DESC";
+			}
+		} else {
+			sql += " order by P.prod_no";
+		}
 		
 		int totalCount = this.getTotalCount(sql);
 		System.out.println("ProductDAO :: totalCount  :: " + totalCount);

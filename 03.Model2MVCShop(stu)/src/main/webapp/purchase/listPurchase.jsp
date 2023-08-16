@@ -2,6 +2,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<c:set var="type" value="Purchase"/>
+
 <html>
 <head>
 <title>구매 목록조회</title>
@@ -12,7 +14,7 @@
 </script>
 
 <script type="text/javascript">
-	function fncGetList(currentPage) {
+	function fncGet${ type }List(currentPage) {
 		if (document.detailForm.beginDate.value == "" && document.detailForm.endDate.value != "") {
 			alert("기간별 조회는 시작 날짜를 기입해야합니다.");
 			return false;
@@ -45,29 +47,35 @@
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
 	<tr>
-		<td align="right">
-			<strong>기간별 조회 </strong>
-			<td width="150" class="ct_write01">
-				<input 	type="text" readonly="readonly" name="beginDate" class="ct_input_g" 
-								style="width: 100px; height: 19px" maxLength="20" value="${ !empty beginDate ? beginDate : ''}"/>
-				<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
-							onclick="show_calendar('document.detailForm.beginDate', document.detailForm.beginDate.value)"/>
-			</td>
-			<td width="20"><strong> ~ </strong></td>
-			<td width="150" class="ct_write01">
-				<input 	type="text" readonly="readonly" name="endDate" class="ct_input_g" 
-								style="width: 100px; height: 19px;" maxLength="20" value="${ !empty endDate ? endDate : ''}"/>
-				<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
-							onclick="show_calendar('document.detailForm.endDate', document.detailForm.endDate.value)"/>
-			</td>
-		<td align="right" width="70">
+		<td align="right" width="450">
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td><strong>기간별 조회 </strong></td>
+					<td width="150" class="ct_write01">
+						<input 	type="text" readonly="readonly" name="beginDate" class="ct_input_g" 
+										style="width: 100px; height: 19px" maxLength="20" value="${ !empty beginDate ? beginDate : ''}"/>
+						<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
+									onclick="show_calendar('document.detailForm.beginDate', document.detailForm.beginDate.value)"/>
+					</td>
+					<td width="20"><strong> ~ </strong></td>
+					<td width="150" class="ct_write01">
+						<input 	type="text" readonly="readonly" name="endDate" class="ct_input_g" 
+										style="width: 100px; height: 19px;" maxLength="20" value="${ !empty endDate ? endDate : ''}"/>
+						<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
+									onclick="show_calendar('document.detailForm.endDate', document.detailForm.endDate.value)"/>
+					</td>
+					<tr>
+			</table>
+		</td>
+		
+		<td align="right" width="10">
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="17" height="23">
 						<img src="/images/ct_btnbg01.gif" width="17" height="23">
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top:3px;">
-						<a href="javascript:fncGetList('1');">조회</a>
+						<a href="javascript:fncGet${ type }List('1');">조회</a>
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23">
@@ -154,7 +162,9 @@
 	<tr>
 		<td align="center">
 			<input type="hidden" id="currentPage" name="currentPage" value=""/>
-			<jsp:include page="../common/pageNavigator.jsp"/>	
+			<jsp:include page="../common/pageNavigator.jsp">
+				<jsp:param value="${ type }" name="type"/>
+			</jsp:include>	
 		</td>
 	</tr>
 </table>

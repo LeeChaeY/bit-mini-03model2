@@ -10,6 +10,7 @@
 		<c:set var="title" value="목록조회"/>
 	</c:when>
 </c:choose>
+<c:set var="type" value="Product"/>
 
 <html>
 <head>
@@ -21,10 +22,42 @@
 	</script>
 
 	<script type="text/javascript">
-	
-	function fncGetList(currentPage){
+	function fncGet${ type }List(currentPage){
+		if(document.detailForm.searchCondition.value == "1") {
+			if (document.detailForm.beginPrice.value == "" || document.detailForm.endPrice.value == "") {
+				alert("금액 범위를 기입해야합니다.");
+				return false;
+			}
+		} else {
+			if (document.detailForm.searchKeyword.value == "") {
+				alert("키워드를 기입해야합니다.");
+				return false;
+			}
+		}
+		
 		document.getElementById("currentPage").value = currentPage;
 		document.detailForm.submit();
+	}
+	
+	
+	function fncPriceRange() {
+		let td = document.getElementById("tdPrice");
+		let searchKeyword = document.getElementById("searchKeyword");
+		
+		if (event.target.value == "1") {
+			td.style.display = "";
+			searchKeyword.style.display = "none";
+		} else if (event.target.value == "0") {
+			td.style.display = "none";
+			searchKeyword.style.display = "";
+		}
+	}
+	
+	function fncPriceOrder(currentPage) {
+		if (event.target.value == "1" || event.target.value == "2") {
+			document.getElementById("currentPage").value = currentPage;
+			document.detailForm.submit();
+		}
 	}
 	
 </script>
@@ -33,7 +66,6 @@
 <body bgcolor="#ffffff" text="#000000">
 
 <div style="width:98%; margin-left:10px;">
-
 <form name="detailForm" action="/listProduct.do?menu=${!empty menu ? menu : ''}" method="post">
 
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
@@ -56,27 +88,40 @@
 	</tr>
 </table>
 
-
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
 	<tr>
 		<td align="right">
-			<select name="searchCondition" class="ct_input_g" style="width:80px">
+			<select id="searchCondition" name="searchCondition" class="ct_input_g" onClick="javascript:fncPriceRange();"  style="width:80px">
 				<option value="0" 
-					${ !empty search.searchCondition && search.searchCondition.equals("0") ? "selected" : ""}>
-						상품번호
+					${!empty search.searchCondition && search.searchCondition.equals("0") ? "selected" : ""}>
+						상품명
 				</option>
 				<option value="1" 
 					${!empty search.searchCondition && search.searchCondition.equals("1") ? "selected" : ""}>
-						상품명
-				</option>
-				<option value="2" 
-					${!empty search.searchCondition && search.searchCondition.equals("2") ? "selected" : ""}>
 						상품가격
 				</option>
 			</select>
-		<input type="text" name="searchKeyword" value="${ search.searchKeyword }" 
+			<input id="searchKeyword" type="text" name="searchKeyword" value="${ search.searchKeyword }" 
 							class="ct_input_g" style="width:200px; height:19px" />
 		</td>
+		
+		<td id="tdPrice" align="right" width="400" style="display:none">
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="80"><strong> &nbsp금액별 검색 </strong></td>
+					<td width="150" class="ct_write01">
+						<input type="number" name="beginPrice" class="ct_input_g" 
+										style="width: 100px; height: 19px" maxLength="20" value="${ !empty beginPrice ? beginPrice : ''}"/> 원
+					</td>
+					<td width="20"><strong> ~ </strong></td>
+					<td width="150" class="ct_write01">
+						<input type="number" name="endPrice" class="ct_input_g" 
+										style="width: 100px; height: 19px;" maxLength="20" value="${ !empty endPrice ? endPrice : ''}"/> 원
+					</td>
+					<tr>
+			</table>
+		</td>
+		
 		<td align="right" width="70">
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
@@ -84,13 +129,27 @@
 						<img src="/images/ct_btnbg01.gif" width="17" height="23">
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top:3px;">
-						<a href="javascript:fncGetList('1');">검색</a>
+						<a href="javascript:fncGet${ type }List('1');">검색</a>
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23">
 					</td>
 				</tr>
 			</table>
+		</td>
+		
+		<td align="right" width="150">
+			<select name="orderCondition" class="ct_input_g" style="width:100px" onClick="javascript:fncPriceOrder('1');">
+				<option value="0" selected>정렬</option>
+				<option value="1" 
+					${!empty search.orderCondition && search.orderCondition.equals("0") ? "selected" : ""}>
+						가격낮은순
+				</option>
+				<option value="2" 
+					${!empty search.orderCondition && search.orderCondition.equals("1") ? "selected" : ""}>
+						가격높은순
+				</option>
+			</select>
 		</td>
 	</tr>
 </table>
@@ -176,7 +235,9 @@
 	<tr>
 		<td align="center">
 			<input type="hidden" id="currentPage" name="currentPage" value=""/>
-			<jsp:include page="../common/pageNavigator.jsp"/>	
+			<jsp:include page="../common/pageNavigator.jsp">	
+				<jsp:param name="type" value="${ type }"/>
+			</jsp:include>
 		</td>
 	</tr>
 </table>
