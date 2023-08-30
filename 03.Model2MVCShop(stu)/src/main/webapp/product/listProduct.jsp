@@ -22,19 +22,51 @@
 	</script>
 
 	<script type="text/javascript">
+	window.onload = function() {
+		let td = document.getElementById("tdPrice");
+		let searchKeyword = document.getElementById("searchKeyword");
+		
+		if (document.detailForm.searchCondition.value == "2") {
+			td.style.display = "";
+			searchKeyword.style.display = "none";
+		} else if (document.detailForm.searchCondition.value == "1") {
+			td.style.display = "none";
+			searchKeyword.style.display = "";
+		}
+	}
+	
 	function fncGet${ type }List(currentPage){
-		if(document.detailForm.searchCondition.value == "1") {
+		let se = document.detailForm.searchCondition;
+		let op = se.options[se.selectedIndex].value;
+
+		if(op == "2") {
 			if (document.detailForm.beginPrice.value == "" || document.detailForm.endPrice.value == "") {
 				alert("금액 범위를 기입해야합니다.");
 				return false;
+			} else if (document.detailForm.beginPrice.value != "" && document.detailForm.endPrice.value != "" 
+							&& document.detailForm.beginPrice.value > document.detailForm.endPrice.value) {
+				alert("금액 범위가 잘못되었습니다.");
+				return false;
 			}
-		} else {
+		} else if (op == "1") {
 			if (document.detailForm.searchKeyword.value == "") {
 				alert("키워드를 기입해야합니다.");
 				return false;
 			}
+		} else {
+			alert("검색 분야를 기입해야합니다.");
+			return false;
 		}
 		
+		if (op == "1") {
+			document.detailForm.beginPrice.value="";
+			document.detailForm.endPrice.value="";
+			document.detailForm.searchKeyword.value = document.detailForm.searchKeyword.value;
+		} else if (op == "2") {
+			document.detailForm.searchKeyword.value = document.detailForm.beginPrice.value+","+document.detailForm.endPrice.value;
+		}
+		
+		document.detailForm.orderCondition.value = "0";
 		document.getElementById("currentPage").value = currentPage;
 		document.detailForm.submit();
 	}
@@ -42,20 +74,26 @@
 	
 	function fncPriceRange() {
 		let td = document.getElementById("tdPrice");
-		let searchKeyword = document.getElementById("searchKeyword");
-		
-		if (event.target.value == "1") {
+		let op = event.target.options[event.target.selectedIndex].value;
+		if (op == "2") {
 			td.style.display = "";
-			searchKeyword.style.display = "none";
-		} else if (event.target.value == "0") {
+			document.detailForm.searchKeyword.style.display = "none";
+		} else if (op == "1") {
 			td.style.display = "none";
-			searchKeyword.style.display = "";
+			document.detailForm.searchKeyword.style.display = "";
 		}
 	}
 	
 	function fncPriceOrder(currentPage) {
-		if (event.target.value == "1" || event.target.value == "2") {
+		let se = document.detailForm.searchCondition;
+		let op = se.options[se.selectedIndex].value;
+		if (op == "1" || op == "2") {
 			document.getElementById("currentPage").value = currentPage;
+			
+			document.detailForm.searchKeyword.value = "${search.searchKeyword}";
+			document.detailForm.searchCondition.value = "${search.searchCondition}";
+			document.detailForm.beginPrice.value = "${beginPrice}";
+			document.detailForm.endPrice.value = "${endPrice}";
 			document.detailForm.submit();
 		}
 	}
@@ -92,16 +130,18 @@
 	<tr>
 		<td align="right">
 			<select id="searchCondition" name="searchCondition" class="ct_input_g" onClick="javascript:fncPriceRange();"  style="width:80px">
-				<option value="0" 
-					${!empty search.searchCondition && search.searchCondition.equals("0") ? "selected" : ""}>
-						상품명
-				</option>
+				<option value="0" selected>검색</option>
 				<option value="1" 
 					${!empty search.searchCondition && search.searchCondition.equals("1") ? "selected" : ""}>
+						상품명
+				</option>
+				<option value="2" 
+					${!empty search.searchCondition && search.searchCondition.equals("2") ? "selected" : ""}>
 						상품가격
 				</option>
 			</select>
-			<input id="searchKeyword" type="text" name="searchKeyword" value="${ search.searchKeyword }" 
+			<input id="searchKeyword" type="text" name="searchKeyword" 
+							value="${!empty search.searchCondition && search.searchCondition.equals('1') ? search.searchKeyword : ''}" 
 							class="ct_input_g" style="width:200px; height:19px" />
 		</td>
 		
@@ -139,14 +179,14 @@
 		</td>
 		
 		<td align="right" width="150">
-			<select name="orderCondition" class="ct_input_g" style="width:100px" onClick="javascript:fncPriceOrder('1');">
+			<select id="orderCondition" name="orderCondition" class="ct_input_g" style="width:100px" onChange="javascript:fncPriceOrder('1');">
 				<option value="0" selected>정렬</option>
 				<option value="1" 
-					${!empty search.orderCondition && search.orderCondition.equals("0") ? "selected" : ""}>
+					${!empty search.orderCondition && search.orderCondition.equals("1") ? "selected" : ""}>
 						가격낮은순
 				</option>
 				<option value="2" 
-					${!empty search.orderCondition && search.orderCondition.equals("1") ? "selected" : ""}>
+					${!empty search.orderCondition && search.orderCondition.equals("2") ? "selected" : ""}>
 						가격높은순
 				</option>
 			</select>

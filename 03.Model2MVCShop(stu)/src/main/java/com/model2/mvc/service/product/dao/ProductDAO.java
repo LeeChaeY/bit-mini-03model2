@@ -86,9 +86,9 @@ public class ProductDAO {
 		System.out.println("search.getPageSize():" + search.getPageSize());
 
 		if (search.getSearchCondition() != null &&  !search.getSearchKeyword().equals("") ) {
-			if (search.getSearchCondition().equals("0")) {
+			if (search.getSearchCondition().equals("1")) {
 				sql += " WHERE LOWER(prod_name) LIKE '%" + search.getSearchKeyword().toLowerCase() + "%'";
-			} else if (search.getSearchCondition().equals("1")) {
+			} else if (search.getSearchCondition().equals("2")) {
 				sql += " WHERE price BETWEEN " + search.getSearchKeyword().split(",")[0]
 						+ " AND " + search.getSearchKeyword().split(",")[1];
 			}
